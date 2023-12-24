@@ -1,0 +1,45 @@
+// Run docker containers
+docker-compose up -d
+
+// Purge docker containers
+docker-compose down
+
+// Copy mapper.py file from local pc to docker container
+docker cp mapper.py 435_asg2-namenode-1:mapper.py
+
+// Copy reduceer.py file from local pc to docker container
+docker cp reducer.py 435_asg2-namenode-1:reducer.py
+
+// Specify which docker-compose to run
+docker-compose -f docker-compose.multi.yaml up -d
+
+// Execute bash terminal for hadoop
+docker exec -it 435_asg2-namenode-1 bash
+
+// Create hdfs input folder and add the input txt data into the folder
+hdfs dfs -mkdir -p input
+hdfs dfs -put ./input/* input
+
+// Start mapreduce (choose mapred)
+hadoop jar share/hadoop/tools/lib/hadoop-streaming-3.3.6.jar -file mapper.py -mapper mapper.py -file reducer.py -reducer reducer.py -input input/* -output output
+mapred streaming -files mapper.py,reducer.py -mapper "python mapper.py" -reducer "python reducer.py" -input input -output output
+
+// Remove the output folder in hdfs
+hadoop fs -rm -r output
+
+// List the output files in hdfs
+hdfs dfs -ls output
+
+// View the output file
+hdfs dfs -cat output/*
+
+// Namenode UI http://localhost:9870/
+// ResourceManager UI http://localhost:8088/
+
+// Single Node Results
+Started:	Sat Dec 23 10:36:01 +0000 2023
+Launched:	Sat Dec 23 10:36:02 +0000 2023
+Finished:	Sat Dec 23 10:36:24 +0000 2023
+Elapsed:	22sec
+
+// Multi Node Results

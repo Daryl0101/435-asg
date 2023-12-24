@@ -1,0 +1,68 @@
+version: "2"
+
+services:
+  # Master node 9870
+  namenode:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    image: my-namenode
+    hostname: namenode
+    command: ["hdfs", "namenode"]
+    restart: always
+    ports:
+      - 9870:9870
+    env_file:
+      - ./config
+    volumes:
+      - hadoop-data:/hadoop/namenode
+    environment:
+        ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name"
+  # Worker nodes 9864
+  datanode:
+    image: apache/hadoop:3
+    command: ["hdfs", "datanode"]
+    restart: always
+    ports:
+      - 9864:9864
+    env_file:
+      - ./config
+    volumes:
+      - hadoop-data:/hadoop/datanode_1
+  resourcemanager:
+    image: apache/hadoop:3
+    hostname: resourcemanager
+    command: ["yarn", "resourcemanager"]
+    restart: always
+    ports:
+        - 8088:8088
+    env_file:
+      - ./config
+    volumes:
+      - hadoop-data:/hadoop/resourcemanager
+  nodemanager:
+    image: apache/hadoop:3
+    command: ["yarn", "nodemanager"]
+    restart: always
+    ports:
+        - 8042:8042
+    env_file:
+        - ./config
+    volumes:
+      - hadoop-data:/hadoop/nodemanager
+  # MapReduce JobHistory server 19888
+  historyserver:
+    image: apache/hadoop:3
+    command: ["mapred", "historyserver"]
+    restart: always
+    ports:
+        - 10020:10020
+        - 19888:19888
+    env_file:
+        - ./config
+    volumes:
+      - hadoop-data:/hadoop/history
+
+volumes:
+  hadoop-data:
+    name: hadoop-data

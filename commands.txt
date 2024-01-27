@@ -35,11 +35,3 @@ hdfs dfs -cat output/*
 
 // Namenode UI http://localhost:9870/
 // ResourceManager UI http://localhost:8088/
-
-// Single Node Results
-Started:	Sat Dec 23 10:36:01 +0000 2023
-Launched:	Sat Dec 23 10:36:02 +0000 2023
-Finished:	Sat Dec 23 10:36:24 +0000 2023
-Elapsed:	22sec
-
-// Multi Node Results
